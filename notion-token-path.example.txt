@@ -1,0 +1,3 @@
+# Copy to notion-token-path.txt and put the absolute path to a file containing
+# only your Notion integration token. The token itself is never stored here.
+/path/to/your/notion-token.txt

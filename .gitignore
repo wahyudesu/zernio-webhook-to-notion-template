@@ -1,0 +1,10 @@
+.env
+notion-token-path.txt
+data/
+logs/
+run/
+runtime/
+bin/
+*.db
+*.db-shm
+*.db-wal
