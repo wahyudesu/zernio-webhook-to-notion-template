@@ -346,8 +346,9 @@ function collectLinks(evt, msg, receivedAt) {
   // Zernio often delivers shared posts as attachments with no message text.
   const candidates = [];
   if (typeof msg.text === "string") {
+    const accompanying = msg.text.replace(URL_RE, " ").trim();
     for (const match of msg.text.matchAll(URL_RE)) {
-      candidates.push({ value: match[0], caption: null, source: "text", attachments: [] });
+      candidates.push({ value: match[0], caption: accompanying || null, source: "text", attachments: [] });
     }
     const withoutUrls = msg.text.replace(URL_RE, " ");
     const usernames = new Set();
@@ -625,6 +626,7 @@ async function notionBody(link) {
       children,
     };
   }
+  const postOn = Array.from(new Set((link.caption || "").split(/[^A-Za-z]+/).map((w) => w.trim()).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase()).filter((w) => NOTION_PLATFORMS.includes(w))));
   let creatorId = null;
   try {
     creatorId = await findOrCreateCreator(link, platform);
@@ -642,6 +644,7 @@ async function notionBody(link) {
       Status: { status: { name: "Inbox" } },
       ...(cover ? { "Files & media": { files: [{ name: "Cover", type: "external", external: { url: cover } }] } } : {}),
       ...(creatorId ? { Creator: { relation: [{ id: creatorId }] } } : {}),
+      ...(postOn.length ? { "Post on": multi(postOn) } : {}),
     },
     children,
   };
