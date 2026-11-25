@@ -318,10 +318,11 @@ function classifyLink(raw) {
     }
   } else if (host === "x.com" || host === "twitter.com") {
     platform = "X";
-    if (parts[1] === "status") {
+    const statusIdx = parts.indexOf("status");
+    if (statusIdx !== -1) {
       kind = "post";
-      name = `X post · ${parts[2] || ""}`;
-    } else if (parts.length === 1) {
+      name = `X post · ${parts[statusIdx + 1] || ""}`;
+    } else if (parts.length === 1 && parts[0] && parts[0] !== "i") {
       kind = "profile";
       name = `@${parts[0]} · X`;
     }
@@ -529,7 +530,10 @@ function authorFromUrl(link, platform) {
     const u = new URL(link.url);
     const parts = u.pathname.split("/").filter(Boolean);
     const host = u.hostname.toLowerCase().replace(/^www\./, "");
-    if ((platform === "X" || host === "x.com" || host === "twitter.com") && parts[1] === "status" && parts[0]) return parts[0];
+    if (platform === "X" || host === "x.com" || host === "twitter.com") {
+      const si = parts.indexOf("status");
+      if (si > 0 && parts[si - 1] && parts[si - 1] !== "i") return parts[si - 1];
+    }
     if ((platform === "Threads" || host === "threads.net" || host === "threads.com") && parts[0]?.startsWith("@")) return parts[0];
     if (platform === "TikTok" && parts[0]?.startsWith("@")) return parts[0];
     if (platform === "YouTube" && parts[0]?.startsWith("@")) return parts[0];

@@ -22,7 +22,7 @@ stop_pid run/server.pid
 stop_pid run/tunnel.pid
 
 # server
-nohup "$NODE" server.mjs >> logs/stdout.log 2>&1 &
+nohup "$NODE" --experimental-sqlite server.mjs >> logs/stdout.log 2>&1 &
 echo $! > run/server.pid
 for i in $(seq 1 20); do
   curl -sf -m 2 "http://127.0.0.1:${PORT:-8787}/health" >/dev/null 2>&1 && break
